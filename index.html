@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muneeb Ki Perfumes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-900 antialiased flex flex-col h-screen overflow-hidden">
+
+    <!-- Header with Search & Cart -->
+    <header class="flex-none sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="goHome()">
+                <div class="w-10 h-10 rounded-full bg-stone-900 text-amber-100 flex items-center justify-center font-bold text-xl tracking-wider">M</div>
+                <div>
+                    <h1 id="brand-title" class="text-base sm:text-lg font-bold tracking-tight text-stone-900 truncate">MUNEEB KI PERFUMES</h1>
+                    <p id="brand-tagline" class="text-[9px] sm:text-[10px] text-stone-500 uppercase tracking-widest">Exclusive Fragrances</p>
+                </div>
+            </div>
+
+            <!-- Search Box -->
+            <div class="flex-1 max-w-md hidden md:block">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </span>
+                    <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search perfumes by name or brand..." class="w-full pl-10 pr-4 py-2 bg-stone-100 border border-transparent rounded-full text-xs focus:bg-white focus:border-stone-400 focus:outline-none transition">
+                </div>
+            </div>
+
+            <button onclick="toggleCart()" class="relative bg-stone-900 text-white px-4 sm:px-5 py-2.5 rounded-full font-medium text-xs sm:text-sm flex items-center space-x-2 shadow-sm hover:bg-stone-800 transition">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="hidden sm:inline">Cart</span>
+                <span id="cart-count" class="bg-amber-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Scrollable Content Control Area -->
+    <div id="main-scroll-area" class="flex-grow overflow-y-auto w-full">
+        
+        <!-- Home / Store View -->
+        <div id="view-home" class="w-full pb-16">
+            <section class="bg-stone-900 text-amber-50 py-12 sm:py-16 px-4 text-center">
+                <div class="max-w-3xl mx-auto">
+                    <span class="text-[10px] sm:text-xs uppercase tracking-widest bg-amber-600/30 text-amber-300 px-3 py-1 rounded-full border border-amber-500/30">Shopify Experience</span>
+                    <h2 class="text-2xl sm:text-5xl font-bold mt-4 tracking-tight">Discover Your Signature Scent</h2>
+                    <p class="text-stone-400 mt-3 text-xs sm:text-base">Auto-calculated shipping & Cash on Delivery.</p>
+                </div>
+            </section>
+
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full">
+                <!-- Mobile Search Bar -->
+                <div class="mb-6 md:hidden">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </span>
+                        <input type="text" id="mobile-search-input" oninput="handleSearch(this.value)" placeholder="Search perfumes..." class="w-full pl-10 pr-4 py-2.5 bg-stone-100 border border-transparent rounded-full text-xs focus:bg-white focus:border-stone-400 focus:outline-none transition">
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <div id="category-filters" class="flex justify-start sm:justify-center space-x-2 mb-8 sm:mb-10 overflow-x-auto pb-2 scrollbar-none">
+                    <button onclick="filterProducts('All')" class="category-btn active px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold bg-stone-900 text-white transition whitespace-nowrap">All</button>
+                    <button onclick="filterProducts('Men')" class="category-btn px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white text-stone-600 border border-stone-200 hover:bg-stone-100 transition whitespace-nowrap">Men</button>
+                    <button onclick="filterProducts('Women')" class="category-btn px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white text-stone-600 border border-stone-200 hover:bg-stone-100 transition whitespace-nowrap">Women</button>
+                    <button onclick="filterProducts('Unisex')" class="category-btn px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white text-stone-600 border border-stone-200 hover:bg-stone-100 transition whitespace-nowrap">Unisex</button>
+                </div>
+
+                <!-- Product Grid -->
+                <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                    <!-- Loading State -->
+                    <div class="col-span-full text-center py-20 text-stone-400">Loading products from store...</div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Product Detail View (PDP) -->
+        <div id="view-pdp" class="w-full hidden pb-16">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+                <button onclick="goHome()" class="inline-flex items-center space-x-2 text-xs font-bold text-stone-600 hover:text-stone-900 mb-6 bg-white px-4 py-2 rounded-full border border-stone-200 shadow-sm transition">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back to Catalog</span>
+                </button>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 bg-white p-6 sm:p-10 rounded-3xl border border-stone-200 shadow-sm">
+                    <!-- Image Gallery Preview -->
+                    <div class="space-y-4">
+                        <div class="relative h-80 sm:h-[450px] rounded-2xl overflow-hidden bg-stone-100 border border-stone-100">
+                            <img id="pdp-main-img" src="" alt="" class="w-full h-full object-cover">
+                        </div>
+                        <div id="pdp-thumbnails" class="flex space-x-3 overflow-x-auto pb-2"></div>
+                    </div>
+
+                    <!-- Product Info & Actions -->
+                    <div class="flex flex-col justify-between">
+                        <div>
+                            <span id="pdp-brand" class="text-xs uppercase tracking-widest text-amber-600 font-bold">Brand</span>
+                            <h2 id="pdp-title" class="text-2xl sm:text-3xl font-bold text-stone-900 mt-1">Product Name</h2>
+                            <div class="flex items-center space-x-3 mt-3">
+                                <span id="pdp-price" class="text-xl font-extrabold text-stone-900">Rs. 0</span>
+                                <span id="pdp-size" class="bg-stone-100 px-3 py-1 rounded-full text-xs font-bold text-stone-700">100ml</span>
+                            </div>
+                            <p id="pdp-desc" class="text-stone-600 text-sm mt-4 leading-relaxed">Description goes here...</p>
+                        </div>
+
+                        <div class="mt-8 pt-6 border-t border-stone-100 space-y-4">
+                            <!-- Qty Controls -->
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wider text-stone-600">Quantity</span>
+                                <div class="flex items-center border border-stone-300 rounded-xl bg-stone-50 overflow-hidden">
+                                    <button onclick="adjustPdpQty(-1)" class="px-4 py-2 text-stone-700 hover:bg-stone-200 transition font-bold">-</button>
+                                    <span id="pdp-qty" class="px-4 text-sm font-bold">1</span>
+                                    <button onclick="adjustPdpQty(1)" class="px-4 py-2 text-stone-700 hover:bg-stone-200 transition font-bold">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <button onclick="pdpAddToCart()" class="w-full bg-stone-900 text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-stone-800 transition shadow-md">Add to Cart</button>
+                                <button onclick="pdpBuyNow()" class="w-full bg-amber-600 text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-amber-700 transition shadow-md">Buy Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="fixed inset-0 z-50 overflow-hidden hidden">
+        <div class="absolute inset-0 bg-stone-900/50 backdrop-blur-sm" onclick="toggleCart()"></div>
+        <div class="absolute inset-y-0 right-0 max-w-full flex pl-10">
+            <div class="w-screen max-w-md bg-white shadow-2xl flex flex-col">
+                <div class="p-6 border-b border-stone-200 flex items-center justify-between">
+                    <h2 class="text-lg font-bold text-stone-900">Your Cart</h2>
+                    <button onclick="toggleCart()" class="text-stone-400 hover:text-stone-600 p-2"><i class="fa-solid fa-xmark text-xl"></i></button>
+                </div>
+                <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4"></div>
+                <div class="p-6 border-t border-stone-200 bg-stone-50">
+                    <div class="space-y-2 mb-4 text-sm">
+                        <div class="flex justify-between text-stone-600"><span>Subtotal</span><span id="cart-subtotal">Rs. 0</span></div>
+                        <div class="flex justify-between text-stone-600"><span>Estimated Shipping</span><span>Calculated at checkout</span></div>
+                        <div class="flex justify-between text-lg font-bold text-stone-900 pt-2 border-t border-stone-200"><span>Total</span><span id="cart-total">Rs. 0</span></div>
+                    </div>
+                    <button onclick="openCheckout()" class="w-full bg-stone-900 text-white py-3.5 rounded-full font-bold hover:bg-stone-800 transition shadow-lg">Proceed to Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 overflow-y-auto hidden flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm" onclick="closeCheckout()"></div>
+        <div class="relative bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-stone-900">Checkout & Shipping</h3>
+                <button onclick="closeCheckout()" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="checkout-form" onsubmit="submitOrder(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">Full Name</label>
+                    <input type="text" id="cust-name" required class="w-full px-4 py-3 rounded-xl border border-stone-300 focus:ring-2 focus:ring-stone-950 focus:outline-none text-sm">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">Phone Number</label>
+                        <input type="tel" id="cust-phone" required placeholder="03XXXXXXXXX" class="w-full px-4 py-3 rounded-xl border border-stone-300 focus:ring-2 focus:ring-stone-950 focus:outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">City</label>
+                        <select id="cust-city" required onchange="updateShippingFee()" class="w-full px-4 py-3 rounded-xl border border-stone-300 bg-white focus:ring-2 focus:ring-stone-950 focus:outline-none text-sm">
+                            <option value="">Select City</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">Complete Delivery Address</label>
+                    <textarea id="cust-address" required rows="2" placeholder="House #, Street name..." class="w-full px-4 py-3 rounded-xl border border-stone-300 focus:ring-2 focus:ring-stone-950 focus:outline-none text-sm"></textarea>
+                </div>
+
+                <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2 text-sm">
+                    <div class="flex justify-between text-stone-600"><span>Items Subtotal:</span><span id="chk-subtotal">Rs. 0</span></div>
+                    <div class="flex justify-between text-stone-600"><span>Shipping Fee (<span id="shipping-zone-text">Standard</span>):</span><span id="chk-delivery">Rs. 0</span></div>
+                    <div class="flex justify-between font-bold text-stone-900 pt-2 border-t border-stone-200"><span>Total Payable:</span><span id="chk-total">Rs. 0</span></div>
+                </div>
+
+                <div class="p-3 bg-stone-100 rounded-xl text-sm font-medium text-stone-800 flex items-center justify-between">
+                    <span>Cash on Delivery (COD)</span>
+                    <i class="fa-solid fa-truck text-amber-600"></i>
+                </div>
+                <button type="submit" id="submit-btn" class="w-full bg-amber-600 text-white py-4 rounded-xl font-bold hover:bg-amber-700 transition shadow-lg mt-4">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-50 overflow-y-auto hidden flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-stone-900/70 backdrop-blur-md"></div>
+        <div class="relative bg-white rounded-[2.5rem] max-w-sm w-full p-8 text-center shadow-2xl z-10 border border-stone-100">
+            <div class="relative w-20 h-20 bg-gradient-to-tr from-amber-500 to-amber-600 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-5 shadow-lg shadow-amber-600/30">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <span class="text-[10px] uppercase tracking-widest text-amber-600 font-bold bg-amber-50 px-3 py-1 rounded-full border border-amber-200/55">Muneeb Ki Perfumes</span>
+            <h3 class="text-2xl font-extrabold text-stone-900 mt-3 tracking-tight">Order Confirmed!</h3>
+            <div class="inline-block bg-stone-100 text-stone-800 text-xs font-semibold px-4 py-1.5 rounded-full mt-3 border border-stone-200">
+                <span id="success-order-id">Order ID: ORD-XXXXXX</span>
+            </div>
+            <p class="text-xs text-stone-500 mt-3 leading-relaxed px-2">Aapka order record sheet mein save ho gaya hai. Hum jald hi aapse rabta karenge.</p>
+            <button onclick="closeSuccessModal()" class="mt-7 w-full bg-stone-900 text-white py-3.5 rounded-2xl font-bold text-sm hover:bg-stone-800 transition shadow-xl">Continue Shopping</button>
+        </div>
+    </div>
+
+    <!-- Fixed Copyright Footer -->
+    <footer class="flex-none bg-white border-t border-stone-200 py-4 text-center text-xs text-stone-500 z-40">
+        <p>&copy; 2026 Muneeb Ki Perfumes. All rights reserved.</p>
+    </footer>
+
+    <!-- Script Logic -->
+    <script>
+        // Note: Yahan aapko apna Google Apps Script Web App URL paste karna hoga jab aap deploy karenge
+        const APPS_SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+        let storeData = { 
+            settings: { StoreName: "MUNEEB KI PERFUMES", StoreTagline: "Exclusive Fragrances" }, 
+            products: [
+                {
+                    id: 1,
+                    name: 'Royal Oud Intense',
+                    brand: 'Muneeb Scents',
+                    size: '100ml',
+                    price: 3500,
+                    image: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500',
+                    extra_images: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=500, https://images.unsplash.com/photo-1594035910387-fea47794261f?w=500',
+                    description: 'Rich woody and oriental notes with deep long-lasting projection for formal wear.',
+                    category: 'Men',
+                    weight_kg: 0.4
+                },
+                {
+                    id: 2,
+                    name: 'Velvet Rose Bloom',
+                    brand: 'Muneeb Scents',
+                    size: '50ml',
+                    price: 2500,
+                    image: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=500',
+                    extra_images: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500',
+                    description: 'An enchanting floral blend of Taif roses, white musk, and warm amber.',
+                    category: 'Women',
+                    weight_kg: 0.3
+                },
+                {
+                    id: 3,
+                    name: 'Blue Ocean Aqua',
+                    brand: 'Muneeb Scents',
+                    size: '100ml',
+                    price: 3000,
+                    image: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=500',
+                    extra_images: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500',
+                    description: 'Refreshing aquatic citrus notes perfect for daily energetic wear.',
+                    category: 'Unisex',
+                    weight_kg: 0.4
+                }
+            ], 
+            shippingRates: [
+                { city: 'Karachi', base_fee: 200, per_kg_extra: 50 },
+                { city: 'Lahore', base_fee: 250, per_kg_extra: 75 },
+                { city: 'Islamabad', base_fee: 250, per_kg_extra: 75 },
+                { city: 'Other Cities', base_fee: 300, per_kg_extra: 100 }
+            ] 
+        };
+
+        let cart = [];
+        let activeCategory = 'All';
+        let searchQuery = '';
+        let currentCalculatedShipping = 0;
+        let currentSelectedProduct = null;
+        let pdpQty = 1;
+
+        function initStore() {
+            populateCityDropdown();
+            renderProducts();
+            
+            // Agar aap Google Sheet se live data fetch karna chahein toh yahan API call laga sakte hain
+            if (APPS_SCRIPT_URL !== "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE") {
+                fetch(APPS_SCRIPT_URL)
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data && data.products) { storeData = data; }
+                        populateCityDropdown();
+                        renderProducts();
+                    }).catch(err => console.log("Using embedded demo catalog"));
+            }
+        }
+
+        function populateCityDropdown() {
+            const citySelect = document.getElementById('cust-city');
+            if (!storeData.shippingRates || storeData.shippingRates.length === 0) return;
+            citySelect.innerHTML = `<option value="">Select City</option>` + storeData.shippingRates.map(rate => `
+                <option value="${rate.city}">${rate.city}</option>
+            `).join('');
+        }
+
+        function handleSearch(query) {
+            searchQuery = query.toLowerCase().trim();
+            renderProducts();
+        }
+
+        function filterProducts(cat) {
+            activeCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if (btn.innerText.toLowerCase() === cat.toLowerCase()) {
+                    btn.className = "category-btn active px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold bg-stone-900 text-white transition whitespace-nowrap";
+                } else {
+                    btn.className = "category-btn px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white text-stone-600 border border-stone-200 hover:bg-stone-100 transition whitespace-nowrap";
+                }
+            });
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            let filtered = storeData.products;
+            
+            if (!filtered || filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-stone-400">No products found.</div>`;
+                return;
+            }
+
+            if (activeCategory !== 'All') {
+                filtered = filtered.filter(p => p.category && p.category.toLowerCase() === activeCategory.toLowerCase());
+            }
+
+            if (searchQuery !== '') {
+                filtered = filtered.filter(p => 
+                    (p.name && p.name.toLowerCase().includes(searchQuery)) || 
+                    (p.brand && p.brand.toLowerCase().includes(searchQuery))
+                );
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-stone-400">No matching perfumes found.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => `
+                <div onclick="openProductDetail('${p.id}')" class="bg-white rounded-3xl p-4 sm:p-5 border border-stone-200 flex flex-col justify-between shadow-sm hover:shadow-md transition cursor-pointer group">
+                    <div>
+                        <div class="relative h-56 sm:h-64 rounded-2xl overflow-hidden bg-stone-100 mb-4">
+                            <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-stone-800 shadow-sm">${p.size}</span>
+                        </div>
+                        <span class="text-[10px] sm:text-xs uppercase tracking-widest text-amber-600 font-bold">${p.brand}</span>
+                        <h3 class="text-base sm:text-lg font-bold text-stone-900 mt-1">${p.name}</h3>
+                        <p class="text-stone-500 text-xs mt-1 line-clamp-2">${p.description}</p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between pt-4 border-t border-stone-100">
+                        <div>
+                            <span class="text-[10px] sm:text-xs text-stone-400 block">Price</span>
+                            <span class="text-base sm:text-lg font-bold text-stone-900">Rs. ${p.price}</span>
+                        </div>
+                        <span class="bg-stone-900 text-white px-4 py-2 rounded-full text-xs font-semibold group-hover:bg-amber-600 transition">View Details</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openProductDetail(id) {
+            const product = storeData.products.find(p => String(p.id) === String(id));
+            if(!product) return;
+            currentSelectedProduct = product;
+            pdpQty = 1;
+            document.getElementById('pdp-qty').innerText = pdpQty;
+
+            document.getElementById('pdp-brand').innerText = product.brand;
+            document.getElementById('pdp-title').innerText = product.name;
+            document.getElementById('pdp-price').innerText = `Rs. ${product.price}`;
+            document.getElementById('pdp-size').innerText = product.size;
+            document.getElementById('pdp-desc').innerText = product.description;
+            document.getElementById('pdp-main-img').src = product.image;
+
+            let images = [product.image];
+            if (product.extra_images) {
+                let extras = product.extra_images.split(',').map(s => s.trim()).filter(s => s !== '');
+                images = images.concat(extras);
+            }
+
+            const thumbContainer = document.getElementById('pdp-thumbnails');
+            thumbContainer.innerHTML = images.map((imgUrl, idx) => `
+                <div onclick="changePdpImage('${imgUrl}')" class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-stone-100 border-2 ${idx === 0 ? 'border-amber-600' : 'border-transparent'} cursor-pointer flex-shrink-0 transition">
+                    <img src="${imgUrl}" class="w-full h-full object-cover">
+                </div>
+            `).join('');
+
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-pdp').classList.remove('hidden');
+            document.getElementById('main-scroll-area').scrollTop = 0;
+        }
+
+        function changePdpImage(url) {
+            document.getElementById('pdp-main-img').src = url;
+        }
+
+        function goHome() {
+            document.getElementById('view-pdp').classList.add('hidden');
+            document.getElementById('view-home').classList.remove('hidden');
+            document.getElementById('main-scroll-area').scrollTop = 0;
+        }
+
+        function adjustPdpQty(delta) {
+            pdpQty += delta;
+            if(pdpQty < 1) pdpQty = 1;
+            document.getElementById('pdp-qty').innerText = pdpQty;
+        }
+
+        function pdpAddToCart() {
+            if(!currentSelectedProduct) return;
+            const existing = cart.find(item => String(item.id) === String(currentSelectedProduct.id));
+            if (existing) { 
+                existing.qty += pdpQty; 
+            } else { 
+                cart.push({ ...currentSelectedProduct, qty: pdpQty }); 
+            }
+            updateCartCount();
+            toggleCart();
+        }
+
+        function pdpBuyNow() {
+            pdpAddToCart();
+            openCheckout();
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-modal').classList.toggle('hidden');
+            renderCartItems();
+        }
+
+        function updateCartCount() {
+            document.getElementById('cart-count').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-stone-400">Your cart is empty.</div>`;
+                updateCartTotals(0);
+                return;
+            }
+            container.innerHTML = cart.map((item, index) => `
+                <div class="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border border-stone-200">
+                    <div class="flex items-center space-x-3">
+                        <img src="${item.image}" class="w-12 h-12 sm:w-14 sm:h-14 object-cover rounded-xl">
+                        <div>
+                            <h4 class="font-bold text-stone-900 text-xs sm:text-sm">${item.name}</h4>
+                            <p class="text-[10px] sm:text-xs text-stone-500">${item.size} | Rs. ${item.price}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center border border-stone-300 rounded-lg bg-white overflow-hidden">
+                        <button onclick="changeQty(${index}, -1)" class="px-2 py-1 text-stone-600 hover:bg-stone-100 text-xs">-</button>
+                        <span class="px-2 text-xs font-bold">${item.qty}</span>
+                        <button onclick="changeQty(${index}, 1)" class="px-2 py-1 text-stone-600 hover:bg-stone-100 text-xs">+</button>
+                    </div>
+                </div>
+            `).join('');
+            updateCartTotals(cart.reduce((sum, item) => sum + (item.price * item.qty), 0));
+        }
+
+        function changeQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) { cart.splice(index, 1); }
+            updateCartCount();
+            renderCartItems();
+        }
+
+        function updateCartTotals(subtotal) {
+            document.getElementById('cart-subtotal').innerText = `Rs. ${subtotal}`;
+            document.getElementById('cart-total').innerText = `Rs. ${subtotal}`;
+        }
+
+        function updateShippingFee() {
+            const selectedCity = document.getElementById('cust-city').value;
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const totalWeight = cart.reduce((sum, item) => sum + ((Number(item.weight_kg) || 0.5) * item.qty), 0);
+
+            let baseFee = 200;
+            let perKg = 50;
+
+            if (selectedCity && storeData.shippingRates) {
+                const match = storeData.shippingRates.find(r => r.city.toLowerCase() === selectedCity.toLowerCase());
+                if (match) {
+                    baseFee = Number(match.base_fee) || 200;
+                    perKg = Number(match.per_kg_extra) || 50;
+                } else {
+                    const fallback = storeData.shippingRates.find(r => r.city.toLowerCase() === 'other cities');
+                    if (fallback) {
+                        baseFee = Number(fallback.base_fee) || 300;
+                        perKg = Number(fallback.per_kg_extra) || 100;
+                    }
+                }
+            }
+
+            currentCalculatedShipping = Math.round(baseFee + ((totalWeight > 1 ? totalWeight - 1 : 0) * perKg));
+
+            document.getElementById('shipping-zone-text').innerText = selectedCity || 'Standard';
+            document.getElementById('chk-subtotal').innerText = `Rs. ${subtotal}`;
+            document.getElementById('chk-delivery').innerText = `Rs. ${currentCalculatedShipping}`;
+            document.getElementById('chk-total').innerText = `Rs. ${subtotal + currentCalculatedShipping}`;
+        }
+
+        function openCheckout() {
+            if (cart.length === 0) { alert('Your cart is empty!'); return; }
+            if (!document.getElementById('cart-modal').classList.contains('hidden')) {
+                toggleCart();
+            }
+            document.getElementById('checkout-modal').classList.remove('hidden');
+            updateShippingFee();
+        }
+
+        function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); }
+
+        function submitOrder(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.innerText = "Placing Order...";
+            btn.disabled = true;
+
+            const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const city = document.getElementById('cust-city').value;
+            const address = document.getElementById('cust-address').value;
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const total = subtotal + currentCalculatedShipping;
+
+            const orderData = { 
+                orderId, 
+                name, 
+                phone, 
+                city, 
+                address, 
+                items: cart, 
+                deliveryFee: currentCalculatedShipping, 
+                total, 
+                paymentMethod: 'Cash on Delivery' 
+            };
+
+            if (APPS_SCRIPT_URL !== "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE") {
+                fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                }).then(() => {
+                    handleOrderSuccess(orderId, btn);
+                }).catch(err => {
+                    alert('Error: ' + err);
+                    btn.innerText = "Place Order";
+                    btn.disabled = false;
+                });
+            } else {
+                // Demo mode simulation if URL is not set yet
+                setTimeout(() => {
+                    handleOrderSuccess(orderId, btn);
+                }, 1000);
+            }
+        }
+
+        function handleOrderSuccess(orderId, btn) {
+            closeCheckout();
+            document.getElementById('success-order-id').innerText = "Order ID: " + orderId;
+            document.getElementById('success-modal').classList.remove('hidden');
+            cart = [];
+            updateCartCount();
+            document.getElementById('checkout-form').reset();
+            btn.innerText = "Place Order";
+            btn.disabled = false;
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.add('hidden');
+        }
+
+        window.onload = initStore;
+    </script>
+</body>
+</html>
